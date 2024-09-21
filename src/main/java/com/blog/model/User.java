@@ -5,13 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.blog.utils.constants.Gender;
 
 import java.util.List;
-
 
 /**
  * User Entity
@@ -25,14 +25,16 @@ import java.util.List;
 public class User {
 
    @Id
-   @Field("user_id")
-    private String id;
+   private String id;
    private String name;
    private String mobileNumber;
+   @Indexed(unique = true)
    private String userName;
+   @Indexed(unique = true)
    private String email;
    private Gender gender;
    private List<String> followersUserNameList;
    private List<String> followingUserNameList;
    private List<BlogPost> blogPosts;
+
 }

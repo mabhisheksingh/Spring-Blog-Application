@@ -1,14 +1,15 @@
 package com.blog.service;
 
+import com.blog.dto.PagedDTO;
 import com.blog.dto.RegisterUserDTO;
 import com.blog.dto.UserDTO;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 
 
 public interface UserService {
      public UserDTO getUserByUserName(String userName) ;
-     public @NotNull @Valid RegisterUserDTO saveUser(RegisterUserDTO userDTo);
-
+     public RegisterUserDTO saveUser(RegisterUserDTO userDTo);
+     public PagedDTO<UserDTO> getUserList(Integer pageNo,Integer pageSize);
+     public UserDTO getUserById(String id);
+//     public UserDTO updateUser(UserDTO userDTO);
+     public void deleteUser(String userName);
 }

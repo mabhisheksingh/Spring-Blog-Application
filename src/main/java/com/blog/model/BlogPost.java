@@ -1,5 +1,8 @@
 package com.blog.model;
 
+import com.blog.utils.constants.Category;
+import com.blog.utils.constants.Tag;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,16 +21,15 @@ import java.util.List;
 @Document(value = "blog_post")
 public class BlogPost {
     @Id
-    @Field(name = "post_id")
     private String id;
     private String title;
     private String content;
-    @Field(name = "user_id")
-    private String authorId;
-    private String category;
-    private String tags;
-    private Instant createTime;
-    private Instant updateTime;
+    @Field(name = "author_id")
+    private String authorUserName;
+    private List<Category> category;
+    private List<Tag> tags;
+    private Instant createdTime;
+    private Instant updatedTime;
     private Integer views;
     private Integer likes;
     @Field(name = "comments_id")
