@@ -10,6 +10,13 @@ Key cloak will create automatically when application start  on port *8080* by de
 
 U need to create realm and client and assign it to realm admin
 
+## how to run code formatter
+
+```bash
+mvn spotless:check 
+mvn spotless:apply 
+```
+
 
 
 ## Authors
