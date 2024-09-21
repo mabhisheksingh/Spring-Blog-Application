@@ -1,7 +1,5 @@
 package com.blog.model;
 
-
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,16 +12,18 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Document (value = "comments")
+@Document(value = "comments")
 public class Comments {
-    @Id
-    @Field(name = "comment_id")
-    private String commentId;
-    @Field(name = "content")
-    private String content;
-    @Field(name = "post_id")
-    private int postId;
-    @Field(name = "user_id")
-    private int userId;
+  @Id
+  @Field(name = "comment_id")
+  private String commentId;
 
+  @Field(name = "content")
+  private String content;
+
+  @Field(name = "post_id")
+  private int postId;
+
+  @Field(name = "user_id")
+  private int userId;
 }
