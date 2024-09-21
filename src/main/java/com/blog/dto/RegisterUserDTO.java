@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RegisterUserDTO {
     @Null
-    private Long id;
+    private String id;
     @NotNull
     @NotEmpty(message = "Name should not be empty")
     private String name;

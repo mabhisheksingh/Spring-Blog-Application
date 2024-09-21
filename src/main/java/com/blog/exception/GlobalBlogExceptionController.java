@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +43,7 @@ public class GlobalBlogExceptionController  {
     @ExceptionHandler(BlogException.class)
     public ResponseEntity<?> handleBlogException(BlogException ex) {
         CustomException customException = CustomException.builder()
-                .errorCode(HttpStatus.NOT_FOUND.value())
+                .errorCode(ex.getStatusCode())
                 .errorMessage(ex.getMessage())
                 .field(ex.getField())
                 .statusCode(ex.getStatusCode())

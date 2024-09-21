@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class BlogException extends RuntimeException {
     private String field;
     private String message;
-    private Integer statusCode= HttpStatus.BAD_REQUEST.value();
+    private Integer statusCode = HttpStatus.BAD_REQUEST.value();
     private LocalDateTime timestamp;
 
     public BlogException(String message) {
@@ -31,6 +31,13 @@ public class BlogException extends RuntimeException {
         this.timestamp = LocalDateTime.now();
     }
 
+    public BlogException(String message, Integer statusCode) {
+        super(message);
+        this.message = message;
+        this.statusCode = statusCode;
+        this.timestamp = LocalDateTime.now();
+    }
+
     public BlogException(String field, String message, Integer statusCode) {
         super(message);
         this.field = field;
@@ -39,7 +46,7 @@ public class BlogException extends RuntimeException {
         this.timestamp = LocalDateTime.now();
     }
 
-    public BlogException(String field, String message, Integer statusCode,LocalDateTime localDate) {
+    public BlogException(String field, String message, Integer statusCode, LocalDateTime localDate) {
         super(message);
         this.field = field;
         this.message = message;

@@ -8,6 +8,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.blog.utils.constants.Gender;
+
 import java.util.List;
 
 
@@ -29,7 +31,7 @@ public class User {
    private String mobileNumber;
    private String userName;
    private String email;
-   private String gender;
+   private Gender gender;
    private List<String> followersUserNameList;
    private List<String> followingUserNameList;
    private List<BlogPost> blogPosts;
