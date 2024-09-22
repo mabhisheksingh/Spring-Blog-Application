@@ -1,10 +1,9 @@
 package com.blog.config;
 
 import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
-
-import jakarta.servlet.http.HttpServletResponse;
 import org.jboss.logging.Logger;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Component;
 @Order(2)
 public class RequestInterceptFilter implements Filter {
   private final Logger logger = Logger.getLogger(RequestInterceptFilter.class);
+
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
