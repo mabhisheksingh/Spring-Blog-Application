@@ -18,9 +18,15 @@ import lombok.NoArgsConstructor;
 public class UserDTO {
   @Null private String id;
 
+  @Null private String keyCloakUserId;
+
   @NotNull
-  @NotEmpty(message = "Name should not be empty")
-  private String name;
+  @NotEmpty(message = "FirstName should not be empty")
+  private String firstName;
+
+  @NotNull
+  @NotEmpty(message = "FirstName should not be empty")
+  private String lastName;
 
   @NotNull
   @NotEmpty(message = "Mobile number should not be empty")

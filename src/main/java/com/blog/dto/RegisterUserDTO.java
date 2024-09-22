@@ -16,10 +16,15 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RegisterUserDTO {
   @Null private String id;
+  @Null private String keyCloakUserId;
 
   @NotNull
-  @NotEmpty(message = "Name should not be empty")
-  private String name;
+  @NotEmpty(message = "First Name should not be empty")
+  private String firstName;
+
+  @NotNull
+  @NotEmpty(message = "Last Name should not be empty")
+  private String lastName;
 
   @NotNull
   @NotEmpty(message = "Mobile number should not be empty")

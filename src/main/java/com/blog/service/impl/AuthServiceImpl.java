@@ -1,9 +1,12 @@
 package com.blog.service.impl;
 
 import com.blog.dto.TokenDTO;
-import com.blog.security.idp.impl.keyCloakServiceImpl;
+import com.blog.exception.BlogException;
+import com.blog.security.idp.impl.KeyCloakServiceImpl;
 import com.blog.service.AuthService;
+import java.util.Objects;
 import org.jboss.logging.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +15,9 @@ public class AuthServiceImpl implements AuthService {
 
   Logger logger = Logger.getLogger(AuthServiceImpl.class);
 
-  private keyCloakServiceImpl keyCloakServiceImpl;
+  private final KeyCloakServiceImpl keyCloakServiceImpl;
 
-  public AuthServiceImpl(keyCloakServiceImpl keyCloakServiceImpl) {
+  public AuthServiceImpl(KeyCloakServiceImpl keyCloakServiceImpl) {
     this.keyCloakServiceImpl = keyCloakServiceImpl;
   }
 
@@ -24,5 +27,13 @@ public class AuthServiceImpl implements AuthService {
     TokenDTO object = keyCloakServiceImpl.login(username.toLowerCase(), password);
     logger.info(object);
     return object;
+  }
+
+  @Override
+  public Boolean isValidateToken(String token) {
+    if (Objects.isNull(token)) {
+      throw new BlogException("Token is null", HttpStatus.BAD_REQUEST.value());
+    }
+    return keyCloakServiceImpl.isValidateToken(token);
   }
 }

@@ -6,6 +6,7 @@ import com.blog.dto.UserDTO;
 import com.blog.exception.BlogException;
 import com.blog.model.User;
 import com.blog.repository.UserRepository;
+import com.blog.security.idp.impl.KeyCloakServiceImpl;
 import com.blog.service.UserService;
 import java.util.List;
 import java.util.Objects;
@@ -24,10 +25,12 @@ public class UserServiceImpl implements UserService {
 
   private final Logger logger = Logger.getLogger(UserServiceImpl.class);
 
-  UserRepository userRepository;
+  private final UserRepository userRepository;
+  private final KeyCloakServiceImpl keyCloakService;
 
-  public UserServiceImpl(UserRepository userRepository) {
+  public UserServiceImpl(UserRepository userRepository, KeyCloakServiceImpl keyCloakService) {
     this.userRepository = userRepository;
+    this.keyCloakService = keyCloakService;
   }
 
   @Override
@@ -36,16 +39,19 @@ public class UserServiceImpl implements UserService {
     try {
       User user =
           User.builder()
-              .name(userDTo.getName())
+              .firstName(userDTo.getFirstName())
+              .lastName(userDTo.getLastName())
               .userName(userDTo.getUserName())
               .email(userDTo.getEmail())
               .gender(userDTo.getGender())
               .mobileNumber(userDTo.getMobileNumber())
               .build();
       user = userRepository.save(user);
-      if (Objects.nonNull(user)) {
-        userDTo.setId(user.getId());
-      }
+
+      // save data in keycloak Server
+      String keyCloakUserId = keyCloakService.createUser(userDTo);
+      userDTo.setKeyCloakUserId(keyCloakUserId);
+      userDTo.setId(user.getId());
       return userDTo;
     } catch (DuplicateKeyException duplicateKeyException) {
       logger.error("Duplicate key Exception : ", duplicateKeyException);
@@ -59,7 +65,6 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDTO getUserByUserName(String userName) {
     User user = userRepository.findByUserName(userName);
-    System.out.println(user);
 
     if (Objects.isNull(user)) {
       throw new BlogException(
@@ -68,7 +73,8 @@ public class UserServiceImpl implements UserService {
     UserDTO userDTO = new UserDTO();
     userDTO.setId(user.getId());
     userDTO.setUserName(user.getUserName());
-    userDTO.setName(user.getName());
+    userDTO.setFirstName(user.getFirstName());
+    userDTO.setLastName(user.getLastName());
     userDTO.setEmail(user.getEmail());
     userDTO.setMobileNumber(user.getMobileNumber());
     userDTO.setGender(user.getGender());
@@ -90,7 +96,8 @@ public class UserServiceImpl implements UserService {
                   user ->
                       UserDTO.builder()
                           .id(user.getId())
-                          .name(user.getName())
+                          .firstName(user.getFirstName())
+                          .lastName(user.getLastName())
                           .userName(user.getUserName())
                           .email(user.getEmail())
                           .gender(user.getGender())
@@ -123,7 +130,8 @@ public class UserServiceImpl implements UserService {
               UserDTO userDTO = new UserDTO();
               userDTO.setId(user.getId());
               userDTO.setUserName(user.getUserName());
-              userDTO.setName(user.getName());
+              userDTO.setFirstName(user.getFirstName());
+              userDTO.setLastName(user.getLastName());
               userDTO.setEmail(user.getEmail());
               userDTO.setMobileNumber(user.getMobileNumber());
               userDTO.setGender(user.getGender());
