@@ -1,6 +1,8 @@
 package com.blog.service;
 
+import com.blog.dto.TokenDTO;
+
 public interface AuthService {
 
-  Object login(String username, String password);
+  TokenDTO login(String username, String password);
 }

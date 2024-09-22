@@ -135,6 +135,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void deleteUser(String userName) {
+
     logger.info("Inside deleteUser");
     try {
       Long deletedCount = userRepository.deleteByUserName(userName);
