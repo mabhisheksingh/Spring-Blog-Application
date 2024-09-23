@@ -41,12 +41,7 @@ public class UserController {
   @GetMapping("/get-user/{userName}")
   public ResponseEntity<?> getUser(@PathVariable String userName) {
     logger.info("Inside getUser");
-    UserDTO userDTO = new UserDTO();
-    userDTO.setId("12L");
-    userDTO.setUserName(userName);
-    userDTO.setName("John");
-    userDTO.setEmail("john.doe@example.com");
-    userDTO = userService.getUserByUserName(userName);
+    UserDTO userDTO = userService.getUserByUserName(userName);
     return ResponseEntity.ok(userDTO);
   }
 

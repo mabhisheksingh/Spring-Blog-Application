@@ -3,10 +3,11 @@ package com.blog.security.idp.impl;
 import static com.blog.utils.constants.KeyCloakHelperFunctions.getKeyCloakPasswordCred;
 
 import com.blog.config.KeyCloakConfigProperties;
+import com.blog.dto.KeyCloakResponseDTO;
 import com.blog.dto.RegisterUserDTO;
 import com.blog.dto.TokenDTO;
 import com.blog.exception.BlogException;
-import com.blog.externalapicall.KeyCloakRestClient;
+import com.blog.external_api_call.KeyCloakRestHttpClient;
 import com.blog.security.idp.BasicAuthFeature;
 import com.blog.security.idp.KeyCloakAdminFeatures;
 import jakarta.ws.rs.core.Response;
@@ -21,17 +22,21 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 @Service
 public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatures {
   private final Logger logger = Logger.getLogger(KeyCloakServiceImpl.class);
   private final Keycloak adminKeyCloak;
   private final KeyCloakConfigProperties keyCloakConfigProperties;
-  private final KeyCloakRestClient keyCloakRestClient;
+  private final KeyCloakRestHttpClient keyCloakHttpClient;
 
   public KeyCloakServiceImpl(
-      KeyCloakConfigProperties keyCloakConfigProperties, KeyCloakRestClient keyCloakRestClient) {
+      KeyCloakConfigProperties keyCloakConfigProperties,
+      KeyCloakRestHttpClient keyCloakRestHttpClient) {
     this.keyCloakConfigProperties = keyCloakConfigProperties;
+    this.keyCloakHttpClient = keyCloakRestHttpClient;
     logger.info("HEY : " + keyCloakConfigProperties);
     this.adminKeyCloak =
         KeycloakBuilder.builder()
@@ -59,15 +64,6 @@ public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatu
                             new BlogException(
                                 "adminKeyCloak.server-url missing in properties file")))
             .build();
-    Keycloak.getInstance(
-        "http://localhost:8080/",
-        "blog",
-        "admin",
-        "admin",
-        "blog",
-        "t3Wf9Mzi1VxL1symNjHH6cFzsfNdSsLr");
-
-    this.keyCloakRestClient = keyCloakRestClient;
   }
 
   @Override
@@ -150,7 +146,8 @@ public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatu
       String createdId = CreatedResponseUtil.getCreatedId(response);
       if (!HttpStatusCode.valueOf(status).is2xxSuccessful() || createdId == null) {
         throw new BlogException(
-            "Error while creating user" + response.getEntity(), HttpStatus.BAD_REQUEST.value());
+            "Failed to create User in Keycloak " + response.getEntity(),
+            HttpStatus.BAD_REQUEST.value());
       }
       return createdId;
     } catch (RuntimeException e) {
@@ -161,6 +158,11 @@ public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatu
 
   @Override
   public Boolean isValidateToken(String accessToken) {
-    return keyCloakRestClient.isValidAccessToken(accessToken);
+    MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+    body.add("token", accessToken); // This will be URL-encoded
+    body.add("client_id", keyCloakConfigProperties.getClientId().get());
+    body.add("client_secret", keyCloakConfigProperties.getClientSecret().get());
+    KeyCloakResponseDTO validToken = keyCloakHttpClient.isValidAccessToken(accessToken, body);
+    return validToken.isActive();
   }
 }
