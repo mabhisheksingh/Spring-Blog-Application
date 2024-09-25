@@ -5,6 +5,7 @@ import com.blog.dto.RegisterUserDTO;
 import com.blog.dto.UserDTO;
 
 public interface UserService {
+
   public UserDTO getUserByUserName(String userName);
 
   public RegisterUserDTO saveUser(RegisterUserDTO userDTo);

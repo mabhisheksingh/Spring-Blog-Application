@@ -56,14 +56,13 @@ public class SwaggerOpenAPI {
     var securityScheme =
         new SecurityScheme()
             .type(SecurityScheme.Type.HTTP)
-            .name("bearer")
+            .name("Auth Token")
             .scheme("bearer")
             .bearerFormat("opaque")
             .in(SecurityScheme.In.HEADER)
             .name("Authorization");
     var securityComponent = new Components().addSecuritySchemes("bearer", securityScheme);
     var securityItem = new SecurityRequirement().addList("bearer");
-
     return new OpenAPI().info(info).components(securityComponent).addSecurityItem(securityItem);
   }
 }

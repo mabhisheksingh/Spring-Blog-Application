@@ -6,5 +6,7 @@ public interface BasicAuthFeature {
 
   TokenDTO login(String username, String password);
 
-  Boolean logout(String username);
+  void logout(String username);
+
+  Boolean sessionLogout(String sessionId);
 }

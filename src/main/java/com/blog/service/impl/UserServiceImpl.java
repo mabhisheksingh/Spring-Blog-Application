@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService {
     this.keyCloakService = keyCloakService;
   }
 
+  @Transactional
   @Override
   public RegisterUserDTO saveUser(RegisterUserDTO userDTo) {
     logger.info("Enter in save user service ..");
@@ -63,6 +64,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public UserDTO getUserByUserName(String userName) {
     User user = userRepository.findByUserName(userName);
 
@@ -70,7 +72,11 @@ public class UserServiceImpl implements UserService {
       throw new BlogException(
           "Username Not found in Db:: " + userName, HttpStatus.NOT_FOUND.value());
     }
-    UserDTO userDTO = new UserDTO();
+    UserDTO userDTO = keyCloakService.getUserInfo(userName);
+    if (Objects.isNull(userDTO)) {
+      throw new BlogException(
+          "User Not found in KeyCloak:: " + userName, HttpStatus.NOT_FOUND.value());
+    }
     userDTO.setId(user.getId());
     userDTO.setUserName(user.getUserName());
     userDTO.setFirstName(user.getFirstName());
@@ -82,6 +88,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public PagedDTO<UserDTO> getUserList(Integer pageNo, Integer pageSize) {
     logger.info("Inside getUserList....");
     logger.debug("Page No :: " + pageNo + " Page Size :: " + pageSize);
@@ -122,6 +129,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public UserDTO getUserById(String id) {
     return userRepository
         .findById(id)
