@@ -11,5 +11,12 @@ public interface BlogPostService {
   @Deprecated
   List<BlogPost> getBlogPostsByAuthor(String authorUserName);
 
-  PagedDTO<BlogPostDTO> getBlogPostList(Integer pageNo, Integer pageSize);
+  PagedDTO<BlogPostDTO> getBlogPostListByUserName(Integer pageNo, Integer pageSize);
+
+  PagedDTO<BlogPostDTO> getBlogPostListByUserName(
+      String userName, Integer pageNo, Integer pageSize);
+
+  BlogPostDTO getBlogPostById(String id);
+
+  PagedDTO<BlogPostDTO> searchBlogByTitle(String article, Integer pageNo, Integer pageSize);
 }

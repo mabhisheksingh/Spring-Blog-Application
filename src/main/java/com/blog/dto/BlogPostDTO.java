@@ -36,9 +36,7 @@ public class BlogPostDTO {
   @Size(min = 100, max = 1000, message = "Content should be between 100 to 1000 characters")
   private String content;
 
-  @NotNull
-  @NotEmpty(message = "Author user name should not be empty")
-  private String authorUserName;
+  @Null private String authorUserName;
 
   @NotNull private List<Category> categories;
   @NotNull private List<Tag> tags;

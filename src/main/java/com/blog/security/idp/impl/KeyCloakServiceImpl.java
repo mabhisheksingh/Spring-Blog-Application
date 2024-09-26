@@ -19,7 +19,10 @@ import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.AccessTokenResponse;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -31,7 +34,7 @@ import org.springframework.util.MultiValueMap;
 @Service
 public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatures {
   private final Logger logger = Logger.getLogger(KeyCloakServiceImpl.class);
-  private final Keycloak adminKeyCloak;
+  private Keycloak adminKeyCloak;
   private final KeyCloakConfigProperties keyCloakConfigProperties;
   private final KeyCloakRestHttpClient keyCloakHttpClient;
 
@@ -119,24 +122,21 @@ public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatu
   public void logout(String username) {
     logger.info("inside Logout");
     logger.debug("username ::" + username);
-    try{
-      List<UserRepresentation> userRepresentations= this.adminKeyCloak.realm(keyCloakConfigProperties.getRealm())
+    try {
+      List<UserRepresentation> userRepresentations =
+          this.adminKeyCloak
+              .realm(keyCloakConfigProperties.getRealm())
               .users()
-              .search(username,true);
-      if(userRepresentations.isEmpty()){
+              .search(username, true);
+      if (userRepresentations.isEmpty()) {
         throw new BlogException("User not found while logout ", HttpStatus.BAD_REQUEST.value());
       }
       UserRepresentation userRepresentation = userRepresentations.get(0);
       String userId = userRepresentation.getId();
-      this.adminKeyCloak.realm(keyCloakConfigProperties.getRealm())
-              .users()
-              .get(userId)
-              .logout();
-
-    }catch (Exception e){
-      throw  new BlogException("Error while logout", HttpStatus.BAD_REQUEST.value());
+      this.adminKeyCloak.realm(keyCloakConfigProperties.getRealm()).users().get(userId).logout();
+    } catch (Exception e) {
+      throw new BlogException("Error while logout", HttpStatus.BAD_REQUEST.value());
     }
-
   }
 
   @Override
@@ -175,7 +175,6 @@ public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatu
   }
 
   @Override
-  @Transactional
   public String createUser(RegisterUserDTO registerUserDTO) {
     // create UserRepresentation
     UserRepresentation userRepresentation = new UserRepresentation();
@@ -183,6 +182,21 @@ public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatu
     userRepresentation.setUsername(registerUserDTO.getUserName());
     userRepresentation.setFirstName(registerUserDTO.getFirstName());
     userRepresentation.setLastName(registerUserDTO.getLastName());
+    this.adminKeyCloak = null;
+    RealmResource realmResource = this.adminKeyCloak.realm(keyCloakConfigProperties.getRealm());
+    UsersResource usersResource = realmResource.users();
+    List<String> realmRoles = List.of("offline_access", "uma_authorization", "user");
+    userRepresentation.setRealmRoles(realmRoles);
+
+    // Step 3: Assign realm roles (e.g., offline_access, uma_authorization, and custom role)
+    RoleRepresentation offlineAccessRole =
+        realmResource.roles().get("offline_access").toRepresentation();
+    RoleRepresentation umaAuthorizationRole =
+        realmResource.roles().get("uma_authorization").toRepresentation();
+    RoleRepresentation customRole =
+        realmResource.roles().get("user").toRepresentation(); // Custom role
+
+    List<RoleRepresentation> roles = List.of(offlineAccessRole, umaAuthorizationRole, customRole);
 
     // TODO: InFuture Need to verify email address
     userRepresentation.setEmailVerified(true);
@@ -205,9 +219,16 @@ public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatu
             "Failed to create User in Keycloak " + response.getEntity(),
             HttpStatus.BAD_REQUEST.value());
       }
+
+      // Step 4: Add the roles to the user
+      usersResource.get(createdId).roles().realmLevel().add(roles);
+
       return createdId;
     } catch (RuntimeException e) {
-      logger.error("Error while creating user", e);
+      logger.error("Error while creating user Runtime Exception " + e.getMessage(), e);
+      throw new BlogException("Error while creating user", HttpStatus.BAD_REQUEST.value());
+    } catch (Exception e) {
+      logger.error("Error while creating user exception : " + e.getMessage(), e);
       throw new BlogException("Error while creating user", HttpStatus.BAD_REQUEST.value());
     }
   }
@@ -221,6 +242,7 @@ public class KeyCloakServiceImpl implements BasicAuthFeature, KeyCloakAdminFeatu
     body.add("client_secret", keyCloakConfigProperties.getClientSecret().get());
 
     KeyCloakResponseDTO validToken = keyCloakHttpClient.isValidAccessToken(accessToken, body);
+    logger.info("validToken ::" + validToken);
     return validToken.isActive();
   }
 

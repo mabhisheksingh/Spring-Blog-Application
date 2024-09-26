@@ -48,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public UserDTO getUserInfo(String accessToken) {
-    logger.info("inside getuser info ");
+    logger.info("inside getUser info ");
     return keyCloakServiceImpl.getUserInfo(accessToken);
   }
 

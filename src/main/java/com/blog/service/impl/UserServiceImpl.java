@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
               .gender(userDTo.getGender())
               .mobileNumber(userDTo.getMobileNumber())
               .build();
+
       user = userRepository.save(user);
 
       // save data in keycloak Server
@@ -59,6 +60,7 @@ public class UserServiceImpl implements UserService {
       throw new BlogException(
           duplicateKeyException.getLocalizedMessage(), HttpStatus.CONFLICT.value());
     } catch (Exception e) {
+      logger.error("Exception : " + e.getMessage(), e);
       throw new BlogException(e.getMessage(), HttpStatus.BAD_REQUEST.value());
     }
   }

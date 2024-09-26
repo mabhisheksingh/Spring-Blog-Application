@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: BlogApplication
+  data:
+    mongodb:
+      uri: mongodb+srv://user:mongodb@blogapp.r1lb0xf.mongodb.net/BlogApp
+      database: BlogApp
+      auto-index-creation: true
+
+server:
+  port: 9001
+
+logging:
+  level:
+    root: INFO
+
+# Docker Config
+# docker:
+#   compose:
+#     enabled: true
+
+keycloak:
+  server-url: http://localhost:8080/
+  realm: blog
+  client-id: blog
+  client-secret: t3Wf9Mzi1VxL1symNjHH6cFzsfNdSsLr
+
+springdoc:
+  api-docs:
+    enabled: true
