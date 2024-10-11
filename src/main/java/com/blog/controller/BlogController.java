@@ -32,7 +32,7 @@ public class BlogController {
 
   // create only own blog
   @PostMapping("/create-blog")
-  public ResponseEntity<?> createBlog(
+  public ResponseEntity<BlogPostDTO> createBlog(
       HttpServletRequest request, @NotNull @RequestBody BlogPostDTO blogPostDTO) {
     logger.info("Creating blog");
     String userName = request.getHeader(CustomHeaders.USER_NAME);
@@ -45,7 +45,7 @@ public class BlogController {
   public ResponseEntity<?> getBlogsById(HttpServletRequest request) {
     logger.info("Getting blogs by author");
     String userName = request.getHeader(CustomHeaders.USER_NAME);
-    List<BlogPost> blogPosts = blogPostService.getBlogPostsByAuthor(userName);
+    List<BlogPost> blogPosts = blogPostService.getBlogPostByAuthor(userName);
     return ResponseEntity.ok(blogPosts);
   }
 

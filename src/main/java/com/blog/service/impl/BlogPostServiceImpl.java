@@ -61,7 +61,7 @@ public class BlogPostServiceImpl implements BlogPostService {
   }
 
   @Override
-  public List<BlogPost> getBlogPostsByAuthor(String authorUserName) {
+  public List<BlogPost> getBlogPostByAuthor(String authorUserName) {
     logger.info("Getting blog by author");
 
     try {

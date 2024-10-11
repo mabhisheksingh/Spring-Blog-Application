@@ -34,7 +34,7 @@ public class AuthController {
     return ResponseEntity.ok(loginResponse);
   }
 
-  @GetMapping("/is-valid-access-token")
+  @GetMapping(path = "/is-valid-access-token")
   public ResponseEntity<Boolean> isValidAccessToken(
       @NotNull @RequestHeader("access-token") String accessToken) {
     logger.info("Inside isValidAccessToken");

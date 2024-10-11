@@ -9,7 +9,7 @@ public interface BlogPostService {
   BlogPostDTO createBlogPost(BlogPostDTO blogPostDTO);
 
   @Deprecated
-  List<BlogPost> getBlogPostsByAuthor(String authorUserName);
+  List<BlogPost> getBlogPostByAuthor(String authorUserName);
 
   PagedDTO<BlogPostDTO> getBlogPostListByUserName(Integer pageNo, Integer pageSize);
 

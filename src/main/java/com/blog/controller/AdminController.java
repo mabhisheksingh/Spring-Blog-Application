@@ -39,7 +39,7 @@ public class AdminController {
   @GetMapping("/get-blogs-byAuthor")
   public ResponseEntity<?> getMethodName(@RequestParam(required = true) String authorName) {
     logger.info("Getting blogs by author" + authorName);
-    List<BlogPost> blogPosts = blogPostService.getBlogPostsByAuthor(authorName);
+    List<BlogPost> blogPosts = blogPostService.getBlogPostByAuthor(authorName);
     return ResponseEntity.ok(blogPosts);
   }
 
@@ -63,11 +63,7 @@ public class AdminController {
   @GetMapping("/get-all-user")
   public ResponseEntity<?> getUserList(
       @NotNull @RequestParam(defaultValue = "0", name = "pageNo", required = true) Integer pageNo,
-      @NotNull
-          @RequestParam(name = "pageSize", defaultValue = "1", required = true)
-          @Max(50)
-          @Min(1)
-          Integer offset) {
+      @NotNull @RequestParam(name = "pageSize", defaultValue = "1", required = true) @Max(50) @Min(1) Integer offset) {
     logger.info("Inside getUserList");
     PagedDTO<UserDTO> userDTOList = userService.getUserList(pageNo, offset);
     return ResponseEntity.ok(userDTOList);

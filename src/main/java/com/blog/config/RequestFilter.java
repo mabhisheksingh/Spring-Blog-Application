@@ -35,7 +35,7 @@ public class RequestFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     String incomingRequestPath = request.getRequestURI();
-    String accessToken = request.getHeader(CustomHeaders.ACCESS_TOKEN);
+    String accessToken = request.getHeader(CustomHeaders.AUTHORIZATION);
     if (Objects.nonNull(accessToken)) {
       logger.info("Access token: " + accessToken);
       // check it is valid or not
