@@ -1,5 +1,6 @@
 package com.blog.exception;
 
+import jakarta.servlet.ServletException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +17,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
-import jakarta.servlet.ServletException;
 
 @RestControllerAdvice
 public class GlobalBlogExceptionController {
@@ -45,22 +44,22 @@ public class GlobalBlogExceptionController {
   @ExceptionHandler(ServletException.class)
   public ResponseEntity<?> handleServletException(ServletException ex) {
     Throwable rootCause = ex.getRootCause();
-    logger.info("rootCause--> "+ rootCause.getMessage());
+    logger.info("rootCause--> " + rootCause.getMessage());
     // Handle other wrapped exceptions or return a generic error
-    CustomException customException = CustomException.builder()
-        .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-        .errorMessage("Internal Server Error")
-        .timestamp(LocalDateTime.now())
-        .build();
+    CustomException customException =
+        CustomException.builder()
+            .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .errorMessage("Internal Server Error")
+            .timestamp(LocalDateTime.now())
+            .build();
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(new ExceptionResponseDTO(List.of(customException)));
   }
 
-
   @ExceptionHandler(BlogException.class)
   public ResponseEntity<?> handleBlogException(BlogException ex) {
 
-    logger.info("ex"+ ex.getMessage());
+    logger.info("ex" + ex.getMessage());
     CustomException customException =
         CustomException.builder()
             .errorCode(ex.getStatusCode())
