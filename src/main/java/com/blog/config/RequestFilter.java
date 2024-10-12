@@ -47,8 +47,7 @@ public class RequestFilter extends OncePerRequestFilter {
     // exp=2024-10-11T15:17:42Z, family_name=Admin, iat=2024-10-11T15:08:42Z,
     // email=abhishek.r.singh@impetus.com, jti=286e09bf-6399-405a-b9a6-e36aa685951a}]
 
-    OAuth2User oAuth2User =
-        (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    // OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     // Generate a unique request ID
     String requestId =
         request.getRequestId().isEmpty() ? UUID.randomUUID().toString() : request.getRequestId();
@@ -57,10 +56,10 @@ public class RequestFilter extends OncePerRequestFilter {
     if (request.getRequestId().isEmpty()) {
       request.setAttribute("Request-Id", requestId);
     }
-    request.setAttribute(CustomHeaders.USER_NAME, oAuth2User.getAttribute("preferred_username"));
+    // request.setAttribute(CustomHeaders.USER_NAME, oAuth2User.getAttribute("preferred_username"));
 
     response.addHeader("X-Request-ID", requestId);
-    response.addHeader(CustomHeaders.USER_NAME, oAuth2User.getAttribute("preferred_username"));
+    // response.addHeader(CustomHeaders.USER_NAME, oAuth2User.getAttribute("preferred_username"));
     // ((HttpServletResponse) request).addHeader(CustomHeaders.USER_NAME,
     // oAuth2User.getAttribute("preferred_username"));
 

@@ -8,6 +8,8 @@ import com.blog.service.BlogPostService;
 import com.blog.service.UserService;
 import com.blog.service.impl.AuthServiceImpl;
 import com.blog.utils.constants.APIPathConstant;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +20,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Admin", description = "Admin APIs")
+@RestController
 @RequestMapping(APIPathConstant.V1_ADMIN_BASE_PATH)
 public class AdminController {
 
