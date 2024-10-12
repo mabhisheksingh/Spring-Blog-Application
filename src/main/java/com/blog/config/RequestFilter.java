@@ -1,21 +1,18 @@
 package com.blog.config;
 
-import static com.blog.utils.constants.APIPathConstant.*;
-
-import com.blog.exception.BlogException;
 import com.blog.service.AuthService;
-import com.blog.utils.JwtUtility;
 import com.blog.utils.constants.CustomHeaders;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Objects;
-import org.apache.http.HttpStatus;
+import java.util.UUID;
+
 import org.jboss.logging.Logger;
-import org.jose4j.jwt.JwtClaims;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -34,38 +31,32 @@ public class RequestFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
-    String incomingRequestPath = request.getRequestURI();
-    String accessToken = request.getHeader(CustomHeaders.AUTHORIZATION);
-    if (Objects.nonNull(accessToken)) {
-      logger.info("Access token: " + accessToken);
-      // check it is valid or not
-      if (Boolean.FALSE.equals(this.authService.isValidateToken(accessToken))) {
-        throw new BlogException("Unauthorized token", HttpStatus.SC_UNAUTHORIZED);
-      }
-      JwtClaims claims = JwtUtility.parseToken(accessToken);
-      logger.info("claims: " + claims);
-      try {
-        String userName = claims.getClaimValueAsString("preferred_username");
-        String roles = claims.getClaimValueAsString("realm_access");
-        logger.info("userName: " + userName + " roles: " + roles);
-        // For User API
-        if (incomingRequestPath.contains(V1_BLOG_BASE_PATH)
-            || incomingRequestPath.contains(V1_ADMIN_BASE_PATH)
-            || incomingRequestPath.contains(V1_AUTH_BASE_PATH)
-            || incomingRequestPath.contains(V1_USER_BASE_PATH)) {
-          request.setAttribute("userName", userName);
-          if (incomingRequestPath.contains(V1_ADMIN_BASE_PATH) && !roles.contains("admin")) {
-            throw new BlogException(
-                "Unauthorized access ADMIN only can access this URL", HttpStatus.SC_UNAUTHORIZED);
-          } else if (!roles.contains("user")) {
-            throw new BlogException("Not Valid User", HttpStatus.SC_UNAUTHORIZED);
-          }
-        }
-      } catch (Exception e) {
-        throw new BlogException("Invalid token" + e.getMessage(), HttpStatus.SC_UNAUTHORIZED);
-      }
+
+
+      
+        // if (user == null && !request.getRequestURI().equals("/login")) {
+        //     // Redirect to login if session is invalid
+        //     // response.sendRedirect("/login");
+        //     return;
+        // }
+
+        // [cbeac751-dfb0-472e-b6c6-8686e5dbb4ba], Granted Authorities: [[OIDC_USER, SCOPE_email, SCOPE_offline_access, SCOPE_openid, SCOPE_profile]], User Attributes: [{at_hash=cvcxJqkJEinAUR-irilWVw, sub=cbeac751-dfb0-472e-b6c6-8686e5dbb4ba, email_verified=true, iss=http://localhost:8080/realms/blog, typ=ID, preferred_username=abhishek, given_name=myuser, nonce=wR_Mxow8ZAlDdTe0UgQNsS-WupfBFaHkiXcUwGTCC1w, sid=c9d16302-ec91-499f-80ed-7a4c0687e0bb, aud=[blog], acr=1, azp=blog, auth_time=2024-10-11T15:08:42Z, name=myuser Admin, exp=2024-10-11T15:17:42Z, family_name=Admin, iat=2024-10-11T15:08:42Z, email=abhishek.r.singh@impetus.com, jti=286e09bf-6399-405a-b9a6-e36aa685951a}]
+
+        OAuth2User oAuth2User = (OAuth2User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+         // Generate a unique request ID
+    String requestId =
+        request.getRequestId().isEmpty() ? UUID.randomUUID().toString() : request.getRequestId();
+    logger.info("Request ID: " + requestId);
+  
+    if (request.getRequestId().isEmpty()) {
+      request.setAttribute("Request-Id", requestId);
     }
-    logger.info("Incoming Request Path: " + incomingRequestPath);
+    request.setAttribute(CustomHeaders.USER_NAME, oAuth2User.getAttribute("preferred_username"));
+    
+    response.addHeader("X-Request-ID", requestId);
+    response.addHeader(CustomHeaders.USER_NAME, oAuth2User.getAttribute("preferred_username"));
+    // ((HttpServletResponse) request).addHeader(CustomHeaders.USER_NAME, oAuth2User.getAttribute("preferred_username"));
+ 
 
     filterChain.doFilter(request, response);
   }
