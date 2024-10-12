@@ -1,7 +1,6 @@
 package com.blog.config;
 
 import com.blog.service.AuthService;
-import com.blog.utils.constants.CustomHeaders;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,8 +9,6 @@ import java.io.IOException;
 import java.util.UUID;
 import org.jboss.logging.Logger;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -47,7 +44,8 @@ public class RequestFilter extends OncePerRequestFilter {
     // exp=2024-10-11T15:17:42Z, family_name=Admin, iat=2024-10-11T15:08:42Z,
     // email=abhishek.r.singh@impetus.com, jti=286e09bf-6399-405a-b9a6-e36aa685951a}]
 
-    // OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    // OAuth2User oAuth2User = (OAuth2User)
+    // SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     // Generate a unique request ID
     String requestId =
         request.getRequestId().isEmpty() ? UUID.randomUUID().toString() : request.getRequestId();

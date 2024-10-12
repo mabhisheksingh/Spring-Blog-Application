@@ -1,31 +1,26 @@
 package com.blog.config;
 
+import com.blog.utils.constants.APIPathConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-// import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-
-import com.blog.utils.constants.APIPathConstant;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-        @Autowired
-        JwtAuthConverter authConverter;
+  @Autowired JwtAuthConverter authConverter;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-//     DefaultAuthorizationCodeTokenResponseClient accessTokenResponseClient =
-//         new DefaultAuthorizationCodeTokenResponseClient();
+    //     DefaultAuthorizationCodeTokenResponseClient accessTokenResponseClient =
+    //         new DefaultAuthorizationCodeTokenResponseClient();
     http.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
         .authorizeHttpRequests(
             auth ->
@@ -35,14 +30,15 @@ public class SecurityConfig {
                     .hasRole("ADMIN")
                     .anyRequest()
                     .authenticated())
-        .oauth2Client(
-            oclient ->
-                oclient.authorizationCodeGrant(Customizer.withDefaults()))
-        // .oauth2Login(
-        //     login ->
-        //         login
-        //             .tokenEndpoint(Customizer.withDefaults())
-        //             .defaultSuccessUrl("/swagger-ui/index.html", true))
+        .oauth2Client(oclient -> oclient.authorizationCodeGrant(Customizer.withDefaults()))
+        .oauth2Login(
+            login ->
+                login
+                    .tokenEndpoint(Customizer.withDefaults())
+                    .defaultSuccessUrl("/swagger-ui/index.html", true)
+                    .failureUrl("/login?error=true")
+                    // .loginPage("/login")
+                    .permitAll())
         // // .oauth2Login(Customizer.withDefaults())
         // .sessionManagement(
         //     session ->
@@ -53,12 +49,9 @@ public class SecurityConfig {
         //             .maxSessionsPreventsLogin(true)
         //             .expiredUrl("/login?expired=true"))
         // .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-        .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authConverter) ))
+        .oauth2ResourceServer(
+            oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(authConverter)))
         .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
     return http.build();
   }
-
-
-
-  
 }
